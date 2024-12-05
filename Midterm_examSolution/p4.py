@@ -12,7 +12,7 @@ except:
   url = 'world_cities.csv'
 
 
-# Read the CSV file into a DataFrame
+# Read the CSV filse into a DataFrame
 df = pd.read_csv(url)
 
 filtered_cities = df[df['population'] > 1000000]
@@ -21,7 +21,7 @@ print(filtered_cities)
 lat_lng = np.radians(filtered_cities[['lat', 'lng']].values)
 earth_radius = 6371000/1000
 distances = haversine_distances(lat_lng) * earth_radius  # Convert radians to kilometres
-print(distance)
+print(distances)
 # Step 3: apply either DBSCAN or AgglomerativeClustering, to cluster the big cities into clusters using the parameters of your choice. Note that the two important parameters for AgglomerativeClustering are n_clusters (e.g. 10) and linkage( e.g., "average"), and  those for DBSCAN are eps (e.g., 10km) and min_samples (e.g., 5). Plot your results for visual examination using any visualization package (e.g., Matplotlib).
 # using DBSCAN
 dbscan = DBSCAN(eps=250, min_samples=5, metric="precomputed")  # eps in kilometers
