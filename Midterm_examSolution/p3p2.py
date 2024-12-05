@@ -16,8 +16,8 @@ model.fit(X, Y)
 
 # Output the intercept and slope
 print("Using Scikit-Learn:")
-print(f"Intercept: {model.intercept_}")
-print(f"Slope: {model.coef_[0]}")
+print("Intercept: {}".format(model.intercept_))
+print("Slope: {}".format(model.coef_[0]))
 
 # Convert the arrays to GPU-supported data types
 X_gpu = cp.array(X)
@@ -29,5 +29,5 @@ gpu_model.fit(X_gpu, Y_gpu)
 
 # Output the intercept and slope
 print("\nUsing cuML:")
-print(f"Intercept: {gpu_model.intercept_}")
-print(f"Slope: {gpu_model.coef_[0]}")
+print("Intercept: {}".format(gpu_model.intercept_))
+print("Slope: {}".format(gpu_model.coef_[0]))
