@@ -13,9 +13,9 @@ df = pd.DataFrame(data)
 result = df.groupby('kind')['height'].agg(['min', 'max'])
 
 # Print the results
-print("Using Pandas:")
+print("--------Using Pandas:-----------")
 print(result)
-
+print('\n\n')
 
 ## Create the cuDF DataFrame
 data_gpu = {
@@ -29,5 +29,6 @@ df_gpu = cudf.DataFrame(data_gpu)
 result_gpu = df_gpu.groupby('kind')['height'].agg(['min', 'max'])
 
 # Print the results
-print("\nUsing cuDF:")
+print("\n --------------Using cuDF:---------------")
 print(result_gpu)
+print('\n\n')
