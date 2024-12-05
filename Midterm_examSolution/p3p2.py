@@ -10,14 +10,23 @@ X = np.array([3.3, 4.4, 5.5, 6.71, 6.93, 4.168, 9.779, 6.182, 7.59, 2.167,
 Y = np.array([1.7, 2.76, 2.09, 3.19, 1.694, 1.573, 3.366, 2.596, 2.53, 1.221, 
               2.827, 3.465, 1.65, 2.904, 2.42, 2.94, 1.3])
 
+# ==============================================================================
+# Linear Regression using scikit-learn
+# ==============================================================================
+
 # Create and fit the linear regression model
 model = LinearRegression()
 model.fit(X, Y)
 
-# Output the intercept and slope
-print("Using Scikit-Learn:")
-print("Intercept: {}".format(model.intercept_))
-print("Slope: {}".format(model.coef_[0]))
+# Output the results
+print(f"Intercept: {model.intercept_}")
+print(f"Slope: {model.coef_[0]}")
+
+print("\n")  # Space between methods
+
+# ==============================================================================
+# Linear Regression using cuML (Optional Bonus)
+# ==============================================================================
 
 # Convert the arrays to GPU-supported data types
 X_gpu = cp.array(X)
@@ -28,6 +37,6 @@ gpu_model = cuLinearRegression()
 gpu_model.fit(X_gpu, Y_gpu)
 
 # Output the intercept and slope
-print("\nUsing cuML:")
-print("Intercept: {}".format(gpu_model.intercept_))
-print("Slope: {}".format(gpu_model.coef_[0]))
+print("\n-----------------------Linear Regression Using cuML:--------------------")
+print(f"Intercept: {gpu_model.intercept_}")
+print(f"Slope: {gpu_model.coef_[0]}")
