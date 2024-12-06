@@ -7,7 +7,8 @@ from math import radians
 
 # ---------------- Step 1: Fetch and Load Data ----------------
 print("\nStep 1: Fetching data from URL and loading into Pandas DataFrame...\n")
-url = "https://gist.githubusercontent.com/jlewis8756/6b83a54351e91012b9fd541356a347c9/raw/54dbb430227d4d44a7262e51194ff702ec0fa410/worldcities.csv"
+url = "https://valid-link-to-dataset/worldcities.csv"
+
 
 try:
     df = pd.read_csv(url)
