@@ -3,9 +3,9 @@ import os
 import time
 import pyarrow.parquet as pq
 
-# File paths (Update these paths based on your system)
-parquet_file = "/data/csc59866_f24/tlcdata/sample.parquet"  # Replace with an actual file path
-csv_file = "/data/csc59866_f24/tlcdata/sample.csv"          # Replace with desired output path
+# File paths
+parquet_file = "/data/csc59866_f24/tlcdata/yellow_tripdata_2009-01.parquet"  # Update to existing file
+csv_file = "/data/csc59866_f24/tlcdata/yellow_tripdata_2009-01.csv"          # Desired output path
 
 # ---------------- Read Parquet and Save as CSV ----------------
 print("Step 1: Reading Parquet file...")
