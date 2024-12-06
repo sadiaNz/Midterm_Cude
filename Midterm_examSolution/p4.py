@@ -4,10 +4,9 @@ from sklearn.metrics.pairwise import haversine_distances
 from sklearn.cluster import DBSCAN
 import matplotlib.pyplot as plt
 import time
-from cuspatial.core import haversine_distance as cuspatial_haversine_distance
 
 
-#project 2 formula as it is deleted from memory ---------
+# Project 2 formula (Pure Python) ---------
 def haversine_distance_python(lat1, lon1, lat2, lon2):
     """
     Compute the haversine distance between two points in kilometers.
@@ -19,6 +18,7 @@ def haversine_distance_python(lat1, lon1, lat2, lon2):
     c = 2 * np.arctan2(np.sqrt(a), np.sqrt(1 - a))
     return R * c
 
+
 def pairwise_haversine_python(coords):
     """
     Compute pairwise haversine distances for a set of coordinates.
@@ -29,6 +29,8 @@ def pairwise_haversine_python(coords):
         for j in range(n):
             distances[i, j] = haversine_distance_python(coords[i][0], coords[i][1], coords[j][0], coords[j][1])
     return distances
+
+
 # ---------------- Step 1: Load Data from Local File ----------------
 print("\nStep 1: Loading data from local file...\n")
 file_path = "Midterm_examSolution/world_cities.csv"  # Local file path
@@ -71,22 +73,6 @@ start = time.time()
 python_distance_matrix = pairwise_haversine_python(filtered_df[['lat', 'lng']].values)
 python_time = time.time() - start
 print(f"Runtime (Pure Python): {python_time:.4f} seconds\n")
-
-
-# ---------------- Step 4: Compute Pairwise Haversine Distances (cuSpatial) ----------------
-print("\nStep 4: Computing pairwise haversine distances with cuSpatial on GPU...\n")
-try:
-    latitudes = filtered_df['lat'].astype(np.float32)
-    longitudes = filtered_df['lng'].astype(np.float32)
-
-    # Measure runtime for cuSpatial
-    start = time.time()
-    cuspatial_distance_matrix = cuspatial_haversine_distance(latitudes, longitudes)
-    cuspatial_time = time.time() - start
-    print(f"Runtime (cuSpatial): {cuspatial_time:.4f} seconds\n")
-except Exception as e:
-    print(f"Error using cuSpatial: {e}")
-    exit()
 
 # ---------------- Step 5: Apply Clustering ----------------
 print("\nStep 5: Applying DBSCAN clustering algorithm...\n")
@@ -131,9 +117,7 @@ except Exception as e:
 # ---------------- Step 8: Compare Runtimes ----------------
 print("\nStep 8: Comparing runtimes...\n")
 print(f"Runtime for sklearn haversine distances: {sklearn_time:.4f} seconds")
-print(f"Runtime for cuSpatial haversine distances: {cuspatial_time:.4f} seconds (if available)")
 print(f"Runtime for Pure Python haversine distances: {python_time:.4f} seconds\n")
-
 
 # ---------------- Step 9: Analyze Outliers ----------------
 print("\nStep 9: Analyzing outliers (noise points)...\n")
