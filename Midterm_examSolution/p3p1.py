@@ -1,8 +1,6 @@
 import pandas as pd
 import cudf # type: ignore
 
-import cuml
-print(cuml.__version__)
 
 # Create the DataFrame
 data = {
