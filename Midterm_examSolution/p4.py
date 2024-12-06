@@ -6,12 +6,11 @@ import matplotlib.pyplot as plt
 from math import radians
 
 # ---------------- Step 1: Fetch and Load Data ----------------
-print("\nStep 1: Fetching data from URL and loading into Pandas DataFrame...\n")
-url = "https://valid-link-to-dataset/worldcities.csv"
-
+print("\nStep 1: Loading data from local file...\n")
+file_path = "Midterm_examSolution/world_cities.csv"  # Local file path
 
 try:
-    df = pd.read_csv(url)
+    df = pd.read_csv(file_path)
     print("Data fetched and loaded successfully!\n")
     print("Raw Data Sample:\n", df.head(), "\n")
 except Exception as e:
