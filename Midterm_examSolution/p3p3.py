@@ -5,7 +5,8 @@ import pyarrow.parquet as pq
 
 # File paths
 parquet_file = "/data/csc59866_f24/tlcdata/yellow_tripdata_2009-01.parquet"  # Update to existing file
-csv_file = "/data/csc59866_f24/tlcdata/yellow_tripdata_2009-01.csv"          # Desired output path
+csv_file = "/home/nawa24/Midterm_Cude/yellow_tripdata_2009-01.csv"
+         # Desired output path
 
 # ---------------- Read Parquet and Save as CSV ----------------
 print("Step 1: Reading Parquet file...")
