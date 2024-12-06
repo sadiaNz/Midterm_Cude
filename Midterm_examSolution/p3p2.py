@@ -2,7 +2,7 @@ from sklearn.linear_model import LinearRegression
 import numpy as np
 
 from cuml.linear_model import LinearRegression as cuLinearRegression
-import cupy as cp
+
 
 # Define the X and Y arrays
 X = np.array([3.3, 4.4, 5.5, 6.71, 6.93, 4.168, 9.779, 6.182, 7.59, 2.167, 
@@ -28,15 +28,18 @@ print("\n")  # Space between methods
 # Linear Regression using cuML (Optional Bonus)
 # ==============================================================================
 
-# Convert the arrays to GPU-supported data types
-X_gpu = cp.array(X)
-Y_gpu = cp.array(Y)
+# Convert data to float32 for cuML compatibility
+X_cuml = X.astype(np.float32)
+Y_cuml = Y.astype(np.float32)
 
-# Create and fit the linear regression model using cuML
-gpu_model = cuLinearRegression()
-gpu_model.fit(X_gpu, Y_gpu)
+# Fit linear regression using cuML
+cuml_model = cuLinearRegression()
+cuml_model.fit(X_cuml, Y_cuml)
 
-# Output the intercept and slope
-print("\n-----------------------Linear Regression Using cuML:--------------------")
-print(f"Intercept: {gpu_model.intercept_}")
-print(f"Slope: {gpu_model.coef_[0]}")
+# Get intercept and slope
+cuml_intercept = cuml_model.intercept_
+cuml_slope = cuml_model.coef_[0]
+
+print("\n---Linear Regression Using cuML---")
+print(f"Intercept: {cuml_intercept}")
+print(f"Slope: {cuml_slope}")
