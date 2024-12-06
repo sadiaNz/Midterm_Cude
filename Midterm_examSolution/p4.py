@@ -6,6 +6,29 @@ import matplotlib.pyplot as plt
 import time
 from cuspatial.core import haversine_distance as cuspatial_haversine_distance
 
+
+#project 2 formula as it is deleted from memory ---------
+def haversine_distance_python(lat1, lon1, lat2, lon2):
+    """
+    Compute the haversine distance between two points in kilometers.
+    """
+    R = 6371  # Radius of Earth in kilometers
+    dlat = np.radians(lat2 - lat1)
+    dlon = np.radians(lon2 - lon1)
+    a = np.sin(dlat / 2) ** 2 + np.cos(np.radians(lat1)) * np.cos(np.radians(lat2)) * np.sin(dlon / 2) ** 2
+    c = 2 * np.arctan2(np.sqrt(a), np.sqrt(1 - a))
+    return R * c
+
+def pairwise_haversine_python(coords):
+    """
+    Compute pairwise haversine distances for a set of coordinates.
+    """
+    n = len(coords)
+    distances = np.zeros((n, n))
+    for i in range(n):
+        for j in range(n):
+            distances[i, j] = haversine_distance_python(coords[i][0], coords[i][1], coords[j][0], coords[j][1])
+    return distances
 # ---------------- Step 1: Load Data from Local File ----------------
 print("\nStep 1: Loading data from local file...\n")
 file_path = "Midterm_examSolution/world_cities.csv"  # Local file path
@@ -41,6 +64,14 @@ if 'lat' in filtered_df.columns and 'lng' in filtered_df.columns:
 else:
     print("Error: 'lat' or 'lng' column not found in dataset.")
     exit()
+
+# ---------------- Compute Pairwise Haversine Distances (Pure Python) ----------------
+print("\nStep 4: Computing pairwise haversine distances with Pure Python...\n")
+start = time.time()
+python_distance_matrix = pairwise_haversine_python(filtered_df[['lat', 'lng']].values)
+python_time = time.time() - start
+print(f"Runtime (Pure Python): {python_time:.4f} seconds\n")
+
 
 # ---------------- Step 4: Compute Pairwise Haversine Distances (cuSpatial) ----------------
 print("\nStep 4: Computing pairwise haversine distances with cuSpatial on GPU...\n")
@@ -100,7 +131,9 @@ except Exception as e:
 # ---------------- Step 8: Compare Runtimes ----------------
 print("\nStep 8: Comparing runtimes...\n")
 print(f"Runtime for sklearn haversine distances: {sklearn_time:.4f} seconds")
-print(f"Runtime for cuSpatial haversine distances: {cuspatial_time:.4f} seconds\n")
+print(f"Runtime for cuSpatial haversine distances: {cuspatial_time:.4f} seconds (if available)")
+print(f"Runtime for Pure Python haversine distances: {python_time:.4f} seconds\n")
+
 
 # ---------------- Step 9: Analyze Outliers ----------------
 print("\nStep 9: Analyzing outliers (noise points)...\n")
