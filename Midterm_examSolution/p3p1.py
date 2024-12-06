@@ -1,5 +1,5 @@
 import pandas as pd
-import cudf # type: ignore
+import cudf 
 
 
 # Create the DataFrame
