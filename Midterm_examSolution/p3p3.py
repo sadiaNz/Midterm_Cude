@@ -4,7 +4,7 @@ import time
 
 # File paths
 parquet_file = "/data/csc59866_f24/tlcdata/yellow_tripdata_2009-01.parquet"
-csv_file = "/home/nawa24/Midterm_Cude/yellow_tripdata_2009-01.csv"  # Writable directory
+csv_file = "/home/nawa24/Midterm_Cude/Midterm_examSolution/csv_files/yellow_tripdata_2009-01.csv"
 
 # ---------------- Read Parquet and Save as CSV ----------------
 print("Step 1: Reading Parquet file...")
