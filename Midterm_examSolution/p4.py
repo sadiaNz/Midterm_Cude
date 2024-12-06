@@ -1,47 +1,74 @@
 import pandas as pd
 import numpy as np
-from sklearn.cluster import DBSCAN
 from sklearn.metrics.pairwise import haversine_distances
+from sklearn.cluster import DBSCAN, AgglomerativeClustering
 import matplotlib.pyplot as plt
+from math import radians
 
-#Step 1: import the “raw” CSV file from https://gist.github.com/jlewis8756/6b83a54351e91012b9fd541356a347c9 and read it as a Pandas dataframe. Filter it by keeping only cities that have more than 1 million population (you should get less than 500 rows).
-# Correct raw file URL for reading the CSV
+# ---------------- Step 1: Fetch and Load Data ----------------
+print("\nStep 1: Fetching data from URL and loading into Pandas DataFrame...\n")
+url = "https://gist.githubusercontent.com/jlewis8756/6b83a54351e91012b9fd541356a347c9/raw/54dbb430227d4d44a7262e51194ff702ec0fa410/worldcities.csv"
+
 try:
-  url = "https://gist.githubusercontent.com/jlewis8756/6b83a54351e91012b9fd541356a347c9/raw/world_cities.csv"
-except:
-  url = 'world_cities.csv'
+    df = pd.read_csv(url)
+    print("Data fetched and loaded successfully!\n")
+    print("Raw Data Sample:\n", df.head(), "\n")
+except Exception as e:
+    print(f"Error fetching data: {e}")
+    exit()
 
+# ---------------- Step 2: Filter Cities by Population ----------------
+print("\nStep 2: Filtering cities with population > 1 million...\n")
+if 'population' in df.columns:
+    filtered_df = df[df['population'] > 1_000_000].reset_index(drop=True)
+    print(f"Number of cities with population > 1 million: {len(filtered_df)}\n")
+    print("Filtered Data Sample:\n", filtered_df.head(), "\n")
+else:
+    print("Error: 'population' column not found in dataset.")
+    exit()
 
-# Read the CSV filse into a DataFrame
-df = pd.read_csv(url)
+# ---------------- Step 3: Compute Pairwise Haversine Distances ----------------
+print("\nStep 3: Computing pairwise haversine distances...\n")
+if 'lat' in filtered_df.columns and 'lng' in filtered_df.columns:
+    # Convert lat and lng to radians for haversine_distances
+    coordinates = np.radians(filtered_df[['lat', 'lng']].values)
+    distance_matrix = haversine_distances(coordinates) * 6371  # Multiply by Earth radius (6371 km)
+    print("Pairwise Haversine Distance Matrix Computed (in km).\n")
+else:
+    print("Error: 'lat' or 'lng' column not found in dataset.")
+    exit()
 
-filtered_cities = df[df['population'] > 1000000]
-print('Result of cities that have more than 1 million population')
-print(filtered_cities)
-# Step 2:  using the “lat” (for latitude) and “lng” (for longitude) columns for haversine_distances API and compute pairwise haversine distances among these big cities.
-lat_lng = np.radians(filtered_cities[['lat', 'lng']].values)
-earth_radius = 6371000/1000
-distances = haversine_distances(lat_lng) * earth_radius  # Convert radians to kilometres
-print('\n\\n pairwise haversine distances among these big cities')
-print(distances)
-# Step 3: apply either DBSCAN or AgglomerativeClustering, to cluster the big cities into clusters using the parameters of your choice. Note that the two important parameters for AgglomerativeClustering are n_clusters (e.g. 10) and linkage( e.g., "average"), and  those for DBSCAN are eps (e.g., 10km) and min_samples (e.g., 5). Plot your results for visual examination using any visualization package (e.g., Matplotlib).
-# using DBSCAN
-dbscan = DBSCAN(eps=250, min_samples=5, metric="precomputed")  # eps in kilometers
-labels_dbscan = dbscan.fit_predict(distances)
+# ---------------- Step 4: Apply Clustering ----------------
+print("\nStep 4: Applying clustering algorithm...\n")
 
-#Visualization of clusters
-cities_data = filtered_cities.copy() # because of warning A value is trying to be set on a copy of a slice from a DataFrame.
+# Choose either DBSCAN or AgglomerativeClustering
+# Uncomment one of the following options:
 
-cities_data['Cluster_DBSCAN'] = labels_dbscan
+# Option 1: DBSCAN
+clustering = DBSCAN(eps=500, min_samples=3, metric='precomputed')  # Using 500 km radius for eps
+clusters = clustering.fit_predict(distance_matrix)
 
+# Option 2: AgglomerativeClustering
+# clustering = AgglomerativeClustering(n_clusters=10, linkage='average', affinity='precomputed')
+# clusters = clustering.fit_predict(distance_matrix)
 
-# Plot using DBSCAN labels
+filtered_df['cluster'] = clusters
+print("Clustering completed!")
+print(f"Number of unique clusters: {len(set(clusters)) - (1 if -1 in clusters else 0)}\n")
+print("Sample of clustered data:\n", filtered_df.head(), "\n")
+
+# ---------------- Step 5: Visualize Results ----------------
+print("\nStep 5: Visualizing results...\n")
+
+# Plot clusters
 plt.figure(figsize=(10, 6))
-plt.scatter(cities_data['lng'], cities_data['lat'], c=labels_dbscan, cmap="tab10", s=50, edgecolor='k')
-plt.title("City clusters with pairwise distance", fontsize=16)
-plt.xlabel("Longitude", fontsize=11)
-plt.ylabel("Latitude", fontsize=11)
-plt.colorbar(label="Cluster")
-plt.show()
-plt.savefig('fig.png')
+for cluster in set(clusters):
+    cluster_points = filtered_df[filtered_df['cluster'] == cluster]
+    plt.scatter(cluster_points['lng'], cluster_points['lat'], label=f"Cluster {cluster}" if cluster != -1 else "Noise")
 
+plt.title("Clusters of Cities with Population > 1 Million")
+plt.xlabel("Longitude")
+plt.ylabel("Latitude")
+plt.legend()
+plt.grid(True)
+plt.show()
