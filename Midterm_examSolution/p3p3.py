@@ -1,39 +1,34 @@
 import pandas as pd
 import os
 import time
+import pyarrow.parquet as pq
 
-# File paths
-parquet_file = '/data/csc59866_f24/tlcdata/yellow_tripdata_2009-01.parquet'  # Use the actual file name
-csv_file = 'yellow_tripdata_2009-01.csv'  # Save the CSV in the current directory
+# File paths (Update these paths based on your system)
+parquet_file = "/data/csc59866_f24/tlcdata/sample.parquet"  # Replace with an actual file path
+csv_file = "/data/csc59866_f24/tlcdata/sample.csv"          # Replace with desired output path
 
-# Step 1: Read the Parquet file and measure runtime
-start_time_parquet = time.time()
-df_parquet = pd.read_parquet(parquet_file)
-end_time_parquet = time.time()
+# ---------------- Read Parquet and Save as CSV ----------------
+print("Step 1: Reading Parquet file...")
+start_time_parquet = time.time()  # Start time for Parquet
+parquet_df = pd.read_parquet(parquet_file, engine='pyarrow')
+end_time_parquet = time.time()    # End time for Parquet
 
-# Save the Parquet runtime
-parquet_runtime = (end_time_parquet - start_time_parquet) * 1000  # Convert to milliseconds
+print("Step 2: Saving DataFrame to CSV file...")
+parquet_df.to_csv(csv_file, index=False)
 
-# Step 2: Save the DataFrame to a CSV file
-df_parquet.to_csv(csv_file, index=False)
+# ---------------- Read CSV into DataFrame ----------------
+print("Step 3: Reading CSV file...")
+start_time_csv = time.time()  # Start time for CSV
+csv_df = pd.read_csv(csv_file)
+end_time_csv = time.time()    # End time for CSV
 
-# Step 3: Measure the file sizes
-parquet_file_size = os.path.getsize(parquet_file)  # Size in bytes
-csv_file_size = os.path.getsize(csv_file)  # Size in bytes
+# ---------------- Calculate File Sizes ----------------
+parquet_size = os.path.getsize(parquet_file) / (1024 * 1024)  # Size in MB
+csv_size = os.path.getsize(csv_file) / (1024 * 1024)          # Size in MB
 
-# Step 4: Read the CSV file and measure runtime
-start_time_csv = time.time()
-df_csv = pd.read_csv(csv_file)
-end_time_csv = time.time()
-
-# Save the CSV runtime
-csv_runtime = (end_time_csv - start_time_csv) * 1000  # Convert to milliseconds
-
-# Step 5: Report results
-print("File Sizes:")
-print(f"Parquet file size: {parquet_file_size / (1024 * 1024):.2f} MB")
-print(f"CSV file size: {csv_file_size / (1024 * 1024):.2f} MB")
-
-print("\nRuntimes:")
-print(f"Time to load Parquet file: {parquet_runtime:.2f} ms")
-print(f"Time to load CSV file: {csv_runtime:.2f} ms")
+# ---------------- Report Results ----------------
+print("\n--------------- Results ----------------\n")
+print(f"Parquet file size: {parquet_size:.2f} MB")
+print(f"CSV file size: {csv_size:.2f} MB")
+print(f"Time to load Parquet: {(end_time_parquet - start_time_parquet) * 1000:.2f} ms")
+print(f"Time to load CSV: {(end_time_csv - start_time_csv) * 1000:.2f} ms")
