@@ -22,7 +22,7 @@ model.fit(X, Y)
 print(f"Intercept: {model.intercept_}")
 print(f"Slope: {model.coef_[0]}")
 
-print("\n")  # Space between methods
+print("\n\n")  # Space between methods
 
 # ==============================================================================
 # Linear Regression using cuML (Optional Bonus)
@@ -40,6 +40,13 @@ cuml_model.fit(X_cuml, Y_cuml)
 cuml_intercept = cuml_model.intercept_
 cuml_slope = cuml_model.coef_[0]
 
-print("\n---Linear Regression Using cuML---")
+print("\n ---Linear Regression Using cuML---")
 print(f"Intercept: {cuml_intercept}")
 print(f"Slope: {cuml_slope}")
+
+
+
+# Print comparison
+print("\n---Comparison of Scikit-learn and cuML Outputs---")
+print(f"Scikit-learn Intercept: {sklearn_intercept}, Slope: {sklearn_slope}")
+print(f"cuML Intercept: {cuml_intercept}, Slope: {cuml_slope}")
