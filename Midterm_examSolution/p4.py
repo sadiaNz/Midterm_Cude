@@ -1,20 +1,19 @@
 import pandas as pd
 import numpy as np
 from sklearn.metrics.pairwise import haversine_distances
-from sklearn.cluster import DBSCAN, AgglomerativeClustering
+from sklearn.cluster import DBSCAN
 import matplotlib.pyplot as plt
-from math import radians
 
-# ---------------- Step 1: Fetch and Load Data ----------------
+# ---------------- Step 1: Load Data from Local File ----------------
 print("\nStep 1: Loading data from local file...\n")
 file_path = "Midterm_examSolution/world_cities.csv"  # Local file path
 
 try:
     df = pd.read_csv(file_path)
-    print("Data fetched and loaded successfully!\n")
+    print("Data loaded successfully!\n")
     print("Raw Data Sample:\n", df.head(), "\n")
 except Exception as e:
-    print(f"Error fetching data: {e}")
+    print(f"Error loading data: {e}")
     exit()
 
 # ---------------- Step 2: Filter Cities by Population ----------------
@@ -30,38 +29,26 @@ else:
 # ---------------- Step 3: Compute Pairwise Haversine Distances ----------------
 print("\nStep 3: Computing pairwise haversine distances...\n")
 if 'lat' in filtered_df.columns and 'lng' in filtered_df.columns:
-    # Convert lat and lng to radians for haversine_distances
     coordinates = np.radians(filtered_df[['lat', 'lng']].values)
-    distance_matrix = haversine_distances(coordinates) * 6371  # Multiply by Earth radius (6371 km)
+    distance_matrix = haversine_distances(coordinates) * 6371  # Earth radius in km
     print("Pairwise Haversine Distance Matrix Computed (in km).\n")
 else:
     print("Error: 'lat' or 'lng' column not found in dataset.")
     exit()
 
 # ---------------- Step 4: Apply Clustering ----------------
-print("\nStep 4: Applying clustering algorithm...\n")
-
-# Choose either DBSCAN or AgglomerativeClustering
-# Uncomment one of the following options:
-
-# Option 1: DBSCAN
-clustering = DBSCAN(eps=500, min_samples=3, metric='precomputed')  # Using 500 km radius for eps
+print("\nStep 4: Applying DBSCAN clustering algorithm...\n")
+clustering = DBSCAN(eps=500, min_samples=3, metric='precomputed')  # 500 km radius
 clusters = clustering.fit_predict(distance_matrix)
-
-# Option 2: AgglomerativeClustering
-# clustering = AgglomerativeClustering(n_clusters=10, linkage='average', affinity='precomputed')
-# clusters = clustering.fit_predict(distance_matrix)
-
 filtered_df['cluster'] = clusters
+
 print("Clustering completed!")
 print(f"Number of unique clusters: {len(set(clusters)) - (1 if -1 in clusters else 0)}\n")
 print("Sample of clustered data:\n", filtered_df.head(), "\n")
 
 # ---------------- Step 5: Visualize Results ----------------
 print("\nStep 5: Visualizing results...\n")
-
-# Plot clusters
-plt.figure(figsize=(10, 6))
+plt.figure(figsize=(12, 8))
 for cluster in set(clusters):
     cluster_points = filtered_df[filtered_df['cluster'] == cluster]
     plt.scatter(cluster_points['lng'], cluster_points['lat'], label=f"Cluster {cluster}" if cluster != -1 else "Noise")
@@ -71,4 +58,25 @@ plt.xlabel("Longitude")
 plt.ylabel("Latitude")
 plt.legend()
 plt.grid(True)
-plt.show()
+
+# Explicitly show the plot
+plt.show(block=True)
+
+# ---------------- Step 6: Save Clustered Data ----------------
+output_file = "clustered_cities.csv"
+print(f"\nStep 6: Saving clustered data to '{output_file}'...\n")
+try:
+    filtered_df.to_csv(output_file, index=False)
+    print(f"Clustered data saved successfully to '{output_file}'!")
+except Exception as e:
+    print(f"Error saving clustered data: {e}")
+    exit()
+
+# ---------------- Step 7: Analyze Outliers ----------------
+print("\nStep 7: Analyzing outliers (noise points)...\n")
+noise_points = filtered_df[filtered_df['cluster'] == -1]
+print(f"Number of outlier cities (noise points): {len(noise_points)}\n")
+if len(noise_points) > 0:
+    print("Outlier Cities:\n", noise_points[['city', 'lat', 'lng', 'population']], "\n")
+else:
+    print("No noise points detected.\n")
